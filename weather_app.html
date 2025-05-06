@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .search-box {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        #city {
+            padding: 8px;
+            width: 60%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #get-weather-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #get-weather-btn:hover {
+            background-color: #45a049;
+        }
+
+        .weather-info {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .weather-info p {
+            margin: 5px 0;
+        }
+    </style>live server </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <p>Enter the name of the city to get the current temperature.</p>
+        <div class="search-box">
+            <input type="text" id="city" placeholder="Enter city name" />
+            <button id="get-weather-btn">Get Temperature</button>
+        </div>
+        <div id="weather-info" class="weather-info">
+            <!-- Weather information will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "87d698f33024433cb5352920252903";
+        const apiUrl = "http://api.weatherapi.com/v1/current.json?key=" + apiKey + "&q=";
+
+        document.getElementById("get-weather-btn").addEventListener("click", function () {
+            const city = document.getElementById("city").value.trim();
+            if (city) {
+                getWeather(city);
+            } else {
+                alert("Please enter a city name.");
+            }
+        });
+
+        function getWeather(city) {
+            fetch(apiUrl + city + "&aqi=yes")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById("weather-info").innerHTML = `<p>Error: ${data.error.message}</p>`;
+                    } else {
+                        displayWeather(data);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("weather-info").innerHTML = `<p>Error fetching data. Please try again later.</p>`;
+                });
+        }
+
+        function displayWeather(data) {
+            const city = data.location.name;
+            const region = data.location.region;
+            const country = data.location.country;
+            const temperature = data.current.temp_c;
+            const condition = data.current.condition.text;
+
+            document.getElementById("weather-info").innerHTML = `
+                <h2>${city}, ${region}, ${country}</h2>
+                <p><strong>Temperature:</strong> ${temperature}°C</p>
+                <p><strong>Condition:</strong> ${condition}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
+
